@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kênh Quản Trị - Douple Flower Shop</title>
+  <link rel="icon" type="image/png" href="../assets/logo.png">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+
+  <!-- ================= 1. ADMIN LOGIN SCREEN ================= -->
+  <div class="admin-login-wrapper" id="adminLoginWrapper">
+    <div class="admin-login-card">
+      <img src="../assets/logo.png" alt="Douple Flower Shop" class="login-brand-logo">
+      <h2>Douple Flower Admin</h2>
+      <p>Hệ thống quản lý đơn hàng & yêu cầu làm hoa thủ công</p>
+
+      <form id="adminLoginForm">
+        <div class="admin-form-group">
+          <label for="adminPasswordInput">Mật khẩu quản trị:</label>
+          <input type="password" id="adminPasswordInput" class="admin-input" placeholder="Nhập mật khẩu..." required autocomplete="current-password">
+          <small style="color: var(--admin-text-muted); font-size: 0.78rem; display: block; margin-top: 4px;">
+            Mật khẩu mặc định: <strong style="color: var(--color-primary);">douple2026</strong>
+          </small>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button type="submit" class="admin-btn admin-btn-primary" style="flex: 1; padding: 12px;">
+            <i class="bi bi-shield-lock-fill"></i> Đăng Nhập
+          </button>
+          <button type="button" class="admin-btn admin-btn-outline" style="padding: 12px 16px; font-weight: 600;" onclick="AdminApp.login('douple2026')" title="Đăng nhập ngay 1 chạm">
+            <i class="bi bi-lightning-charge-fill" style="color: var(--color-warning);"></i> Đăng Nhập 1 Chạm
+          </button>
+        </div>
+      </form>
+
+      <div style="margin-top: 20px; font-size: 0.85rem;">
+        <a href="../index.html" style="color: var(--color-primary); font-weight: 600; text-decoration: none;">
+          <i class="bi bi-arrow-left"></i> Quay lại trang bán hàng
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 2. ADMIN MAIN LAYOUT ================= -->
+  <div class="admin-layout" id="adminAppLayout" style="display: none;">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <img src="../assets/logo.png" alt="Douple Flower" class="sidebar-logo">
+        <div>
+          <div class="sidebar-brand-name">Douple Flower</div>
+          <div class="sidebar-brand-badge">Hệ Thống Quản Trị</div>
+        </div>
+      </div>
+
+      <!-- Nav List -->
+      <ul class="sidebar-nav">
+        <li>
+          <a href="#overview" class="nav-item-link active" data-tab="overview">
+            <span><i class="bi bi-grid-fill"></i> Tổng quan</span>
+          </a>
+        </li>
+        <li>
+          <a href="#orders" class="nav-item-link" data-tab="orders">
+            <span><i class="bi bi-bag-check-fill"></i> Đơn hàng & Cọc 50%</span>
+            <span class="nav-badge-count" id="navOrdersBadge">0</span>
+          </a>
+        </li>
+        <li>
+          <a href="#customRequests" class="nav-item-link" data-tab="customRequests">
+            <span><i class="bi bi-palette-fill"></i> Làm hoa theo mẫu</span>
+            <span class="nav-badge-count" id="navReqsBadge" style="background: var(--color-gold);">0</span>
+          </a>
+        </li>
+        <li>
+          <a href="#products" class="nav-item-link" data-tab="products">
+            <span><i class="bi bi-flower1"></i> Danh mục hoa</span>
+          </a>
+        </li>
+        <li>
+          <a href="#settings" class="nav-item-link" data-tab="settings">
+            <span><i class="bi bi-gear-fill"></i> Cài đặt & Ngân hàng</span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">AD</div>
+          <div class="sidebar-user-info">
+            <strong>Admin Tiệm Hoa</strong>
+            <small>Chủ cửa hàng</small>
+          </div>
+        </div>
+        <button class="btn-sidebar-logout" id="adminLogoutBtn" title="Đăng xuất">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="admin-main">
+      <!-- Topbar -->
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <h2 class="topbar-title" id="topbarTitle">Tổng Quan Hoạt Động Cửa Hàng</h2>
+        </div>
+        <div class="topbar-actions" style="display: flex; gap: 10px; align-items: center;">
+          <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="AdminApp.refreshData()" title="Làm mới đồng bộ dữ liệu">
+            <i class="bi bi-arrow-clockwise"></i> Đồng Bộ Dữ Liệu
+          </button>
+          <a href="../index.html" target="_blank" class="btn-view-shop">
+            <i class="bi bi-shop"></i> Xem Trang Khách Hàng <i class="bi bi-box-arrow-up-right" style="font-size: 0.75rem;"></i>
+          </a>
+        </div>
+      </header>
+
+      <!-- Content Body -->
+      <main class="admin-content-body">
+
+        <!-- ================= TAB 1: TỔNG QUAN ================= -->
+        <div class="admin-tab-pane active" id="pane_overview">
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon primary"><i class="bi bi-cash-stack"></i></div>
+              <div class="stat-details">
+                <h4>Tổng Doanh Thu</h4>
+                <div class="stat-value" id="statTotalRevenue">0đ</div>
+                <div class="stat-subtext"><i class="bi bi-graph-up-arrow"></i> Tăng trưởng tốt</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon rose"><i class="bi bi-bag-heart-fill"></i></div>
+              <div class="stat-details">
+                <h4>Tổng Đơn Hàng</h4>
+                <div class="stat-value" id="statTotalOrders">0</div>
+                <div class="stat-subtext" style="color: var(--color-rose);">Tất cả đơn đặt hoa</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon warning"><i class="bi bi-qr-code-scan"></i></div>
+              <div class="stat-details">
+                <h4>Đơn Cọc 50%</h4>
+                <div class="stat-value" id="statDepositOrders">0</div>
+                <div class="stat-subtext" style="color: var(--color-warning);">Đang tiến hành làm</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon success"><i class="bi bi-stars"></i></div>
+              <div class="stat-details">
+                <h4>Làm Theo Mẫu</h4>
+                <div class="stat-value" id="statCustomRequests">0</div>
+                <div class="stat-subtext" style="color: var(--color-success);">Yêu cầu thiết kế riêng</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart & Quick Alerts -->
+          <div class="dashboard-grid-2col">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <h3><i class="bi bi-bar-chart-line-fill text-rose"></i> Doanh Thu 7 Ngày Gần Nhất</h3>
+                <span style="font-size: 0.8rem; color: var(--admin-text-muted);">Đơn vị: VNĐ</span>
+              </div>
+              <div class="admin-card-body" id="revenueChartBox">
+                <!-- SVG Chart by JS -->
+              </div>
+            </div>
+
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <h3><i class="bi bi-bell-fill text-warning"></i> Cần Xử Lý Nhanh</h3>
+              </div>
+              <div class="admin-card-body" style="padding: 16px;">
+                <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.88rem;">
+                  <div style="background: var(--color-warning-bg); padding: 12px; border-radius: 6px; border-left: 3px solid var(--color-warning);">
+                    <strong>Kiểm tra tiền cọc 50%:</strong>
+                    <p style="margin-top: 4px; color: var(--admin-text-muted);">Đơn hàng COD cần đối soát giao dịch chuyển khoản trước khi giao thợ hoa cắm.</p>
+                  </div>
+                  <div style="background: var(--color-rose-soft); padding: 12px; border-radius: 6px; border-left: 3px solid var(--color-rose);">
+                    <strong>Yêu cầu làm hoa riêng mới:</strong>
+                    <p style="margin-top: 4px; color: var(--admin-text-muted);">Khách hàng đang chờ tiệm báo giá mẫu hoa độc quyền theo ý thích.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= TAB 2: ĐƠN HÀNG ================= -->
+        <div class="admin-tab-pane" id="pane_orders">
+          <div class="admin-card">
+            <div class="admin-card-body">
+              <div class="admin-table-controls">
+                <div class="table-filter-pills">
+                  <button class="filter-pill order-filter-pill active" data-status="all">Tất cả đơn</button>
+                  <button class="filter-pill order-filter-pill" data-status="unconfirmed_payment"><i class="bi bi-clock-history"></i> Chờ xác nhận tiền</button>
+                  <button class="filter-pill order-filter-pill" data-status="confirmed_payment"><i class="bi bi-check2-circle"></i> Đã nhận tiền</button>
+                  <button class="filter-pill order-filter-pill" data-status="deposit">Đã cọc 50%</button>
+                  <button class="filter-pill order-filter-pill" data-status="making">Đang làm hoa</button>
+                  <button class="filter-pill order-filter-pill" data-status="shipping">Đang giao</button>
+                  <button class="filter-pill order-filter-pill" data-status="completed">Hoàn thành</button>
+                </div>
+
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                  <div class="table-search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="orderSearchInput" placeholder="Tìm theo mã đơn, tên, SĐT...">
+                  </div>
+                  <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="AdminApp.exportOrdersCSV()" title="Tải file Excel / CSV tất cả đơn hàng">
+                    <i class="bi bi-file-earmark-excel-fill" style="color: var(--color-success);"></i> Xuất Excel / CSV
+                  </button>
+                </div>
+              </div>
+
+              <div class="admin-table-responsive">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Mã đơn</th>
+                      <th>Khách hàng</th>
+                      <th>Sản phẩm hoa</th>
+                      <th>Tổng tiền & Cọc</th>
+                      <th>Xác nhận nhận tiền</th>
+                      <th>Trạng thái đơn</th>
+                      <th>Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody id="ordersTableBody">
+                    <!-- Populated by admin.js -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= TAB 3: YÊU CẦU LÀM THEO MẪU ================= -->
+        <div class="admin-tab-pane" id="pane_customRequests">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h3><i class="bi bi-palette text-rose"></i> Danh Sách Khách Gửi Yêu Cầu Thiết Kế Hoa Riêng</h3>
+            </div>
+            <div class="admin-card-body">
+              <div class="admin-table-responsive">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Mã yêu cầu</th>
+                      <th>Khách hàng</th>
+                      <th>Loại hoa & Màu</th>
+                      <th>Ngân sách & Dịp</th>
+                      <th>Ảnh mẫu khách gửi</th>
+                      <th>Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody id="customRequestsTableBody">
+                    <!-- Populated by admin.js -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= TAB 4: SẢN PHẨM ================= -->
+        <div class="admin-tab-pane" id="pane_products">
+          <div class="admin-card">
+            <div class="admin-card-header" style="flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h3 style="margin-bottom: 4px;"><i class="bi bi-flower1 text-rose"></i> Danh Mục Bó Hoa Kẽm Nhung Đang Bán</h3>
+                <small style="color: var(--admin-text-muted);">Quản lý chỉnh sửa thông tin, giá bán và đăng tải tối đa 5 ảnh chi tiết cho mỗi mẫu hoa</small>
+              </div>
+              <button class="admin-btn admin-btn-primary admin-btn-sm" onclick="AdminApp.openAddProductModal()" style="font-weight: 600;">
+                <i class="bi bi-plus-lg"></i> Thêm Mẫu Hoa Mới
+              </button>
+            </div>
+            <div class="admin-card-body">
+              <div class="admin-table-responsive">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Ảnh & Bộ ảnh (Tối đa 5)</th>
+                      <th>Tên mẫu hoa</th>
+                      <th>Giá bán</th>
+                      <th>Tag nổi bật</th>
+                      <th>Tình trạng</th>
+                      <th>Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody id="productsTableBody">
+                    <!-- Populated by admin.js -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= TAB 5: CÀI ĐẶT ================= -->
+        <div class="admin-tab-pane" id="pane_settings">
+          <div class="admin-card" style="max-width: 760px; margin: 0 auto;">
+            <div class="admin-card-header">
+              <h3><i class="bi bi-gear text-rose"></i> Cài Đặt Cửa Hàng & Thanh Toán QR Ngân Hàng</h3>
+            </div>
+            <div class="admin-card-body">
+              <form id="settingsForm">
+                <h4 style="color: var(--color-primary); font-size: 1rem; margin-bottom: 14px; border-bottom: 1px solid var(--admin-border); padding-bottom: 6px;">
+                  1. Thông tin liên hệ cửa hàng
+                </h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                  <div class="admin-form-group">
+                    <label for="settingPhone">Hotline / Zalo:</label>
+                    <input type="text" id="settingPhone" class="admin-input" required>
+                  </div>
+                  <div class="admin-form-group">
+                    <label for="settingFb">Link Fanpage Facebook:</label>
+                    <input type="url" id="settingFb" class="admin-input" required>
+                  </div>
+                </div>
+
+                <h4 style="color: var(--color-primary); font-size: 1rem; margin-bottom: 14px; border-bottom: 1px solid var(--admin-border); padding-bottom: 6px; margin-top: 24px;">
+                  2. Tài khoản Ngân Hàng nhận tiền cọc 50% & VietQR
+                </h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                  <div class="admin-form-group">
+                    <label for="settingBankName">Tên Ngân Hàng:</label>
+                    <input type="text" id="settingBankName" class="admin-input" required>
+                  </div>
+                  <div class="admin-form-group">
+                    <label for="settingBankAcc">Số Tài Khoản:</label>
+                    <input type="text" id="settingBankAcc" class="admin-input" required>
+                  </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                  <div class="admin-form-group">
+                    <label for="settingBankOwner">Chủ Tài Khoản (In hoa không dấu):</label>
+                    <input type="text" id="settingBankOwner" class="admin-input" required>
+                  </div>
+                  <div class="admin-form-group">
+                    <label for="settingFreeship">Ngưỡng Miễn Phí Ship (VNĐ):</label>
+                    <input type="number" id="settingFreeship" class="admin-input" required>
+                  </div>
+                </div>
+
+                <div style="text-align: right; margin-top: 24px;">
+                  <button type="submit" class="admin-btn admin-btn-primary" style="padding: 12px 30px;">
+                    <i class="bi bi-save2"></i> Lưu Cập Nhật Cài Đặt
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- Modal Chi Tiết Đơn Hàng -->
+  <div class="modal-overlay" id="orderDetailModal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px;">
+    <div style="background: #FFF; width: 100%; max-width: 680px; max-height: 90vh; overflow-y: auto; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); padding: 24px; position: relative;">
+      <button class="admin-modal-close" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+      <div id="orderDetailModalBody"></div>
+    </div>
+  </div>
+
+  <!-- Modal Đổi Trạng Thái Đơn -->
+  <div class="modal-overlay" id="changeStatusModal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px;">
+    <div style="background: #FFF; width: 100%; max-width: 440px; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); padding: 24px; position: relative;">
+      <button class="admin-modal-close" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+      <h3 style="margin-bottom: 14px; font-size: 1.2rem;">Cập Nhật Trạng Thái Đơn Hàng</h3>
+      <div class="admin-form-group">
+        <label for="orderStatusSelect">Chọn trạng thái mới:</label>
+        <select id="orderStatusSelect" class="admin-input">
+          <option value="Chờ xác nhận">Chờ xác nhận</option>
+          <option value="Đã cọc 50% (Đang làm hoa)">Đã cọc 50% (Đang làm hoa)</option>
+          <option value="Đang chuẩn bị hoa handmade">Đang chuẩn bị hoa handmade</option>
+          <option value="Đang giao hàng">Đang giao hàng</option>
+          <option value="Đã hoàn thành">Đã hoàn thành</option>
+          <option value="Đã hủy đơn">Đã hủy đơn</option>
+        </select>
+      </div>
+      <div style="text-align: right; margin-top: 18px; display: flex; justify-content: flex-end; gap: 8px;">
+        <button class="admin-btn admin-btn-outline admin-modal-close">Đóng</button>
+        <button class="admin-btn admin-btn-primary" onclick="AdminApp.saveOrderStatus()">Cập nhật</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Thêm / Chỉnh Sửa Mẫu Hoa (Tối Đa 5 Ảnh) -->
+  <div class="modal-overlay" id="productModal" style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.72); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px;">
+    <div style="background: #FFF; width: 100%; max-width: 680px; max-height: 90vh; overflow-y: auto; border-radius: 14px; box-shadow: 0 25px 50px rgba(0,0,0,0.25); padding: 26px; position: relative;">
+      <button class="admin-modal-close" style="position: absolute; top: 16px; right: 16px; background: #F3F4F6; border: none; width: 34px; height: 34px; border-radius: 50%; font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--admin-text-muted);">&times;</button>
+      
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px; border-bottom: 1px solid var(--admin-border); padding-bottom: 14px;">
+        <div style="width: 42px; height: 42px; border-radius: 10px; background: var(--color-rose-soft); color: var(--color-rose); display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+          <i class="bi bi-flower1"></i>
+        </div>
+        <div>
+          <h3 id="productModalTitle" style="font-size: 1.25rem; color: var(--color-primary); margin: 0;">Thêm Mẫu Hoa Mới Vào Cửa Hàng</h3>
+          <p id="productModalSubtitle" style="font-size: 0.82rem; color: var(--admin-text-muted); margin-top: 2px;">Điền thông tin và tải lên tối đa 5 ảnh chi tiết của mẫu hoa</p>
+        </div>
+      </div>
+      
+      <form id="productForm">
+        <input type="hidden" id="pEditId" value="">
+
+        <div class="admin-form-group">
+          <label for="pName">Tên bó hoa / Hộp hoa: *</label>
+          <input type="text" id="pName" class="admin-input" placeholder="Ví dụ: Bó Hoa Tulip Xanh Pastel" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="admin-form-group">
+            <label for="pCategory">Danh mục hoa:</label>
+            <select id="pCategory" class="admin-input">
+              <option value="hoa-ly">Hoa Ly Kẽm Nhung</option>
+              <option value="hoa-tulip">Hoa Tulip Kẽm Nhung</option>
+              <option value="hoa-hong">Hoa Hồng Đỏ</option>
+              <option value="tot-nghiep">Hoa Tốt Nghiệp</option>
+              <option value="hop-hoa">Hộp Hoa LED Cao Cấp</option>
+            </select>
+          </div>
+          <div class="admin-form-group">
+            <label for="pBadge">Huy hiệu tag nổi bật:</label>
+            <input type="text" id="pBadge" class="admin-input" placeholder="Ví dụ: Bán chạy nhất, Mẫu mới 2026, Hot Trend">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;">
+          <div class="admin-form-group">
+            <label for="pPrice">Giá bán (VNĐ): *</label>
+            <input type="number" id="pPrice" class="admin-input" placeholder="Ví dụ: 380000" required>
+          </div>
+          <div class="admin-form-group">
+            <label for="pOriginalPrice">Giá gốc (VNĐ):</label>
+            <input type="number" id="pOriginalPrice" class="admin-input" placeholder="Ví dụ: 450000">
+          </div>
+          <div class="admin-form-group">
+            <label for="pInStock">Tình trạng kho:</label>
+            <select id="pInStock" class="admin-input">
+              <option value="true">Còn hàng (Nhận làm)</option>
+              <option value="false">Tạm hết hàng</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Section 5 Ảnh Sản Phẩm -->
+        <div class="admin-form-group" style="background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 12px; padding: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+            <div>
+              <label style="font-weight: 700; color: var(--color-primary); margin-bottom: 2px; display: flex; align-items: center; gap: 6px;">
+                <i class="bi bi-images" style="color: var(--color-rose);"></i> Bộ ảnh mẫu hoa (Tối đa 5 ảnh) *
+              </label>
+              <small style="color: var(--admin-text-muted); font-size: 0.78rem;">Khách hàng có thể bấm xem chi tiết và lướt xem các góc ảnh của bó hoa</small>
+            </div>
+            <span class="image-count-indicator" id="pImagesCountBadge">0 / 5 ảnh</span>
+          </div>
+
+          <!-- Lưới 5 ô ảnh (Image Slots Grid) -->
+          <div class="image-slots-grid" id="productImageSlotsGrid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 14px;">
+            <!-- Rendered by AdminApp.renderImageSlots() -->
+          </div>
+
+          <!-- Action bar để upload hoặc dán link -->
+          <div style="display: flex; flex-direction: column; gap: 10px; border-top: 1px dashed #CBD5E1; padding-top: 12px;">
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+              <label class="admin-btn admin-btn-primary admin-btn-sm" style="cursor: pointer; margin-bottom: 0; padding: 8px 14px; background: var(--color-primary);">
+                <i class="bi bi-cloud-arrow-up-fill"></i> Tải ảnh từ máy (chọn 1 hoặc nhiều ảnh)
+                <input type="file" id="pMultiImgFileInput" accept="image/*" multiple style="display: none;" onchange="AdminApp.handleMultiImageUpload(this)">
+              </label>
+
+              <div style="display: flex; gap: 6px; align-items: center; flex: 1; min-width: 250px;">
+                <input type="text" id="pCustomImageUrl" class="admin-input" placeholder="Hoặc dán URL / đường dẫn ảnh..." style="padding: 7px 12px; font-size: 0.85rem; flex: 1;">
+                <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" onclick="AdminApp.addCustomImageUrl()" style="white-space: nowrap; padding: 7px 12px;">
+                  <i class="bi bi-plus-lg"></i> Thêm ảnh
+                </button>
+              </div>
+            </div>
+
+            <!-- Kho ảnh mẫu chụp thật của tiệm -->
+            <div>
+              <small style="color: var(--admin-text-muted); font-size: 0.76rem; font-weight: 600; display: block; margin-bottom: 6px;">Chọn nhanh ảnh mẫu chụp thật của Douple Flower:</small>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="preset-thumb-btn" onclick="AdminApp.addPresetImage('../assets/bo_hoa_ly_hong.jpg')" title="Bó hoa ly kẽm nhung hồng">
+                  <img src="../assets/bo_hoa_ly_hong.jpg" alt="Ly hồng">
+                </button>
+                <button type="button" class="preset-thumb-btn" onclick="AdminApp.addPresetImage('../assets/bo_hoa_ly_xanh.jpg')" title="Bó hoa ly xanh baby">
+                  <img src="../assets/bo_hoa_ly_xanh.jpg" alt="Ly xanh">
+                </button>
+                <button type="button" class="preset-thumb-btn" onclick="AdminApp.addPresetImage('../assets/hop_hoa_kim_tuyen.jpg')" title="Hộp hoa kim tuyến LED">
+                  <img src="../assets/hop_hoa_kim_tuyen.jpg" alt="Hộp hoa kim tuyến">
+                </button>
+                <button type="button" class="preset-thumb-btn" onclick="AdminApp.addPresetImage('../assets/bo_hoa_tulip_pastel.jpg')" title="Bó hoa tulip pastel">
+                  <img src="../assets/bo_hoa_tulip_pastel.jpg" alt="Tulip pastel">
+                </button>
+                <button type="button" class="preset-thumb-btn" onclick="AdminApp.addPresetImage('../assets/bo_huong_duong.jpg')" title="Bó hoa hướng dương tốt nghiệp">
+                  <img src="../assets/bo_huong_duong.jpg" alt="Hướng dương">
+                </button>
+                <button type="button" class="preset-thumb-btn" onclick="AdminApp.addPresetImage('../assets/bo_hoa_hong_do.jpg')" title="Bó hoa hồng đỏ nhung">
+                  <img src="../assets/bo_hoa_hong_do.jpg" alt="Hồng đỏ">
+                </button>
+              </div>
+            </div>
+          </div>
+          <small style="display: block; margin-top: 8px; font-size: 0.76rem; color: var(--admin-text-muted);">
+            <i class="bi bi-info-circle-fill text-primary"></i> <strong>Mẹo:</strong> Ảnh ở <strong>Ô số 1</strong> sẽ là <em>Ảnh bìa đại diện chính</em>. Bạn có thể hover vào ảnh bất kỳ và bấm icon <i class="bi bi-star-fill" style="color: #F59E0B;"></i> để đưa ảnh đó lên làm ảnh chính.
+          </small>
+        </div>
+
+        <div class="admin-form-group">
+          <label for="pDescription">Mô tả sản phẩm & thông điệp quà tặng:</label>
+          <textarea id="pDescription" class="admin-input" rows="3" placeholder="Mô tả chất liệu kẽm nhung loại 1, quy cách gói giấy, phụ kiện tặng kèm..."></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; border-top: 1px solid var(--admin-border); padding-top: 16px;">
+          <button type="button" class="admin-btn admin-btn-outline admin-modal-close" style="padding: 10px 20px;">Hủy bỏ</button>
+          <button type="submit" class="admin-btn admin-btn-primary" id="pSubmitBtn" style="padding: 10px 26px; font-weight: 700;">
+            <i class="bi bi-check-lg"></i> <span id="pSubmitBtnText">Thêm Sản Phẩm Mới</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Xác Nhận Đã Nhận Tiền Thanh Toán Của Khách Hàng -->
+  <div class="modal-overlay" id="confirmPaymentModal" style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.72); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px;">
+    <div style="background: #FFF; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; border-radius: 14px; box-shadow: 0 25px 50px rgba(0,0,0,0.25); padding: 26px; position: relative;">
+      <button class="admin-modal-close" style="position: absolute; top: 16px; right: 16px; background: #F3F4F6; border: none; width: 34px; height: 34px; border-radius: 50%; font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--admin-text-muted);">&times;</button>
+      
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px; border-bottom: 1px solid var(--admin-border); padding-bottom: 14px;">
+        <div style="width: 44px; height: 44px; border-radius: 10px; background: #ECFDF5; color: #10B981; display: flex; align-items: center; justify-content: center; font-size: 1.45rem;">
+          <i class="bi bi-cash-coin"></i>
+        </div>
+        <div>
+          <h3 style="font-size: 1.25rem; color: var(--color-primary); margin: 0;">Xác Nhận Đã Nhận Tiền Thanh Toán</h3>
+          <p style="font-size: 0.82rem; color: var(--admin-text-muted); margin-top: 2px;">Cập nhật trạng thái đối soát tiền cọc hoặc thanh toán với khách hàng</p>
+        </div>
+      </div>
+
+      <div id="confirmPaymentModalBody">
+        <!-- Rendered by AdminApp.openConfirmPaymentModal() -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Xem Phóng To Ảnh Mẫu -->
+  <div class="modal-overlay" id="imagePreviewModal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 99999; padding: 20px;">
+    <div style="position: relative; max-width: 90vw; max-height: 90vh;">
+      <button class="admin-modal-close" style="position: absolute; top: -36px; right: 0; color: #FFF; background: none; border: none; font-size: 2rem; cursor: pointer;">&times;</button>
+      <img id="imagePreviewModalImg" src="" alt="Ảnh mẫu hoa phóng to" style="max-width: 100%; max-height: 85vh; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+    </div>
+  </div>
+
+  <!-- Printable Invoice Element -->
+  <div id="printableInvoice" style="display: none;"></div>
+
+  <!-- Scripts -->
+  <script src="../js/products.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>
